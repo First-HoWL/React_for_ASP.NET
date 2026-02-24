@@ -36,3 +36,26 @@
     transform: rotate(360deg);
   }
 }
+
+table, td, th {
+  border: 1px solid;
+}
+
+table{
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+td{
+  padding: 8px;
+}
+form{
+  display: flex;
+  flex-direction: column;
+}
+form > input{
+  max-width: 200px;
+  margin-bottom: 2px;
+}
+form > button{
+  max-width: 100px;
+}
