@@ -20,7 +20,8 @@ function GetInfo({element}){
 
 function App() {
 
-  
+  const itemsOnPage = 5;
+  const [page, setPage] = useState(1);
   const [htmldata, setHtmlData] = useState();
   const [state, setState] = useState(1);
   const [formData, setFormData] = useState({
@@ -31,17 +32,24 @@ function App() {
     salary: "",
     departmentId: "",
   });
+
+  const [totalCount, setTotalCount] = useState(0);
+  const [pagesCount, setPagesCount] = useState(0);
+
+
   // https://localhost:7198/Doctors/doctors
 
   async function func(){
-    let a = await fetch("https://localhost:7198/Doctors/doctors")
+    let a = await fetch(`https://localhost:7198/Doctors/paged/${page}?size=${itemsOnPage}`)
     let b = await a.json()
     console.log(b)
     if(b !== null && b !== undefined){
       //setData(b)
 
+      setTotalCount(b.totalCount)
+      setPagesCount(b.pagesCount)
       setHtmlData("")
-      b.forEach(e =>{
+      b.items.forEach(e =>{
         setHtmlData((prev) =>([...prev, <GetInfo element={e}/>]))
         
       })
@@ -71,6 +79,7 @@ function App() {
     <button onClick={() => setState(1)}>Doctors</button>
     <button onClick={() => setState(2)}>Add doctor</button>
     {state === 1 && htmldata != null &&
+    <>
     <table>
       <thead>
         <tr>
@@ -86,13 +95,20 @@ function App() {
         {htmldata}
         </tbody>
     </table>
+    <div>
+      <button onClick={() => {page < 2 ? console.log("page: " + page) : setPage(page - 1)}}>←</button>
+      <span>{page} / {pagesCount}</span>
+      <button onClick={() => {page === pagesCount ? console.log("page: " + page) : setPage(page + 1)}}>→</button>
+    </div>
+    </>
     }
     { state === 2 && 
     <>
     <form onSubmit={(e) => {
       e.preventDefault();
       AddDoctor();
-      func();
+
+      setTimeout(() => func(), 2000);
     }}>
       <input required name='name' value={formData.name} onChange={handleChange} placeholder='Name'></input>
       <input required name='surname' value={formData.surname} onChange={handleChange} placeholder='Surname'></input>
