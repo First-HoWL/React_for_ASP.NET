@@ -21,7 +21,7 @@ function GetInfo({element}){
 function App() {
 
   const itemsOnPage = 5;
-  const [page, setPage] = useState(1);
+  const [Gpage, setPage] = useState(1);
   const [htmldata, setHtmlData] = useState();
   const [state, setState] = useState(1);
   const [formData, setFormData] = useState({
@@ -33,20 +33,20 @@ function App() {
     departmentId: "",
   });
 
-  const [totalCount, setTotalCount] = useState(0);
+  //const [totalCount, setTotalCount] = useState(0);
   const [pagesCount, setPagesCount] = useState(0);
 
 
   // https://localhost:7198/Doctors/doctors
 
-  async function func(){
+  async function func(page = Gpage){
     let a = await fetch(`https://localhost:7198/Doctors/paged/${page}?size=${itemsOnPage}`)
     let b = await a.json()
-    console.log(b)
+    //console.log(b)
     if(b !== null && b !== undefined){
       //setData(b)
 
-      setTotalCount(b.totalCount)
+      //setTotalCount(b.totalCount)
       setPagesCount(b.pagesCount)
       setHtmlData("")
       b.items.forEach(e =>{
@@ -74,6 +74,14 @@ function App() {
     } )
   }
 
+  async function UpdatePage(newpage){
+    if(newpage > 0 && newpage <= pagesCount){
+      await setPage(newpage)
+      // console.log(newpage)
+      func(newpage)
+    }
+  }
+
   return (
     <>
     <button onClick={() => setState(1)}>Doctors</button>
@@ -96,9 +104,9 @@ function App() {
         </tbody>
     </table>
     <div>
-      <button onClick={() => {page < 2 ? console.log("page: " + page) : setPage(page - 1)}}>←</button>
-      <span>{page} / {pagesCount}</span>
-      <button onClick={() => {page === pagesCount ? console.log("page: " + page) : setPage(page + 1)}}>→</button>
+      <button onClick={() => {UpdatePage(Gpage - 1)}}>←</button>
+      <span>{Gpage} / {pagesCount}</span>
+      <button onClick={() => {UpdatePage(Gpage + 1)}}>→</button>
     </div>
     </>
     }
