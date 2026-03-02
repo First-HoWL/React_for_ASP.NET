@@ -16,11 +16,88 @@ function GetInfo({element}){
     )
 }
 
+function EditPage({callback, Cpage, pagesCount}){
+
+  //const [buttons, setButtons] = useState("");
+  
+  const buttons = [];
+
+  if (Cpage <= 3) {
+    for (let i = 1; i <= Math.min(pagesCount, 5); i++) {
+      buttons.push(
+        <button key={i} onClick={() => callback(i)} className={i == Cpage ? 'btn-choose-page active' : 'btn-choose-page' }>
+          {i}
+        </button>
+      );
+    }
+    if(pagesCount - Cpage >= 2){
+      if(pagesCount - Cpage >= 3){
+        buttons.push(
+          <span className='btn-choose-page'>
+            ...
+          </span>
+        );
+      }
+      buttons.push(
+        <button key={pagesCount} onClick={() => callback(pagesCount)} className={pagesCount == Cpage ? 'btn-choose-page active' : 'btn-choose-page' }>
+          {pagesCount}
+        </button>
+      );
+      
+    }
+  } else {
+    if(Cpage >= 4){
+    buttons.push(
+        <button key={1} onClick={() => callback(1)} className={1 == Cpage ? 'btn-choose-page active' : 'btn-choose-page' }>
+          1
+        </button>
+      );
+      buttons.push(
+        <span className='btn-choose-page'>
+          ...
+        </span>
+      );
+    }
+    for (let i = Cpage - 1; i <= Math.min(pagesCount, Cpage + 1); i++) {
+      buttons.push(
+        <button key={i} onClick={() => callback(i)} className={i == Cpage ? 'btn-choose-page active' : 'btn-choose-page' }>
+          {i}
+        </button>
+      );
+    }
+
+    if(pagesCount - Cpage >= 2){
+      if(pagesCount - Cpage >= 3){
+        buttons.push(
+          <span className='btn-choose-page'>
+            ...
+          </span>
+        );
+      }
+      buttons.push(
+        <button key={pagesCount} onClick={() => callback(pagesCount)} className={pagesCount == Cpage ? 'btn-choose-page active' : 'btn-choose-page' }>
+          {pagesCount}
+        </button>
+      );
+      
+    }
+
+  }
+
+  return (
+    <div className='btn-row'>
+      <button onClick={() => {callback(Cpage - 1)}} className='btn-choose-page'>←</button>
+      {/* <span>{Cpage} / {pagesCount}</span> */}
+        {buttons}
+      <button onClick={() => {callback(Cpage + 1)}} className='btn-choose-page'>→</button>
+    </div>
+  )
+}
 
 
 function App() {
 
-  const itemsOnPage = 5;
+  const itemsOnPage = 1;
   const [Gpage, setPage] = useState(1);
   const [htmldata, setHtmlData] = useState();
   const [state, setState] = useState(1);
@@ -103,11 +180,8 @@ function App() {
         {htmldata}
         </tbody>
     </table>
-    <div>
-      <button onClick={() => {UpdatePage(Gpage - 1)}}>←</button>
-      <span>{Gpage} / {pagesCount}</span>
-      <button onClick={() => {UpdatePage(Gpage + 1)}}>→</button>
-    </div>
+    
+    <EditPage callback= {(e)=> UpdatePage(e)} Cpage={Gpage} pagesCount={pagesCount}/>
     </>
     }
     { state === 2 && 

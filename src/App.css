@@ -59,3 +59,25 @@ form > input{
 form > button{
   max-width: 100px;
 }
+
+button.btn-choose-page.active{
+  background-color: green;
+}
+button.btn-choose-page{
+  padding: 4px 8px 4px 8px;
+  min-width: 34px;
+  border: 1px solid;
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+span.btn-choose-page{
+  padding: 1px 8px 4px 8px;
+  max-height: 26px;
+}
+div.btn-row{
+  margin-top: 4px;
+  display: flex;
+}
