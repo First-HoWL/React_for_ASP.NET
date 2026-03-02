@@ -16,7 +16,7 @@ function GetInfo({element}){
     )
 }
 
-function EditPage({callback, Cpage, pagesCount}){
+function EditPage({callback, Cpage, pagesCount, totalCount, itemsOnPage}){
 
   //const [buttons, setButtons] = useState("");
   
@@ -85,11 +85,16 @@ function EditPage({callback, Cpage, pagesCount}){
   }
 
   return (
-    <div className='btn-row'>
-      <button onClick={() => {callback(Cpage - 1)}} className='btn-choose-page'>←</button>
-      {/* <span>{Cpage} / {pagesCount}</span> */}
-        {buttons}
-      <button onClick={() => {callback(Cpage + 1)}} className='btn-choose-page'>→</button>
+    <div className='btn-row-gen'>
+      <div className='btn-row'>
+        <button onClick={() => {callback(Cpage - 1)}} className='btn-choose-page'>←</button>
+        {/* <span>{Cpage} / {pagesCount}</span> */}
+          {buttons}
+        <button onClick={() => {callback(Cpage + 1)}} className='btn-choose-page'>→</button>
+      </div>
+      <div className='right-row'>
+        {Math.max(itemsOnPage * (Cpage - 1))} - {Math.min(itemsOnPage * Cpage, totalCount)} from {totalCount}
+      </div>
     </div>
   )
 }
@@ -97,7 +102,7 @@ function EditPage({callback, Cpage, pagesCount}){
 
 function App() {
 
-  const itemsOnPage = 1;
+  const itemsOnPage = 3;
   const [Gpage, setPage] = useState(1);
   const [htmldata, setHtmlData] = useState();
   const [state, setState] = useState(1);
@@ -110,7 +115,7 @@ function App() {
     departmentId: "",
   });
 
-  //const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const [pagesCount, setPagesCount] = useState(0);
 
 
@@ -123,7 +128,7 @@ function App() {
     if(b !== null && b !== undefined){
       //setData(b)
 
-      //setTotalCount(b.totalCount)
+      setTotalCount(b.totalCount)
       setPagesCount(b.pagesCount)
       setHtmlData("")
       b.items.forEach(e =>{
@@ -178,10 +183,11 @@ function App() {
       </thead>
       <tbody>
         {htmldata}
+
         </tbody>
     </table>
+    <EditPage callback= {(e)=> UpdatePage(e)} Cpage={Gpage} pagesCount={pagesCount} totalCount={totalCount} itemsOnPage={itemsOnPage}/>
     
-    <EditPage callback= {(e)=> UpdatePage(e)} Cpage={Gpage} pagesCount={pagesCount}/>
     </>
     }
     { state === 2 && 

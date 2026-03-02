@@ -39,11 +39,13 @@
 
 table, td, th {
   border: 1px solid;
+  
 }
 
 table{
   border-collapse: collapse;
   margin-top: 20px;
+  width: 510px;
 }
 td{
   padding: 8px;
@@ -80,4 +82,16 @@ span.btn-choose-page{
 div.btn-row{
   margin-top: 4px;
   display: flex;
+}
+div.btn-row-gen{
+  display: flex;
+  justify-content: space-between;
+  width: 510px;
+}
+div.right-row{
+  display: flex;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
