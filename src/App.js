@@ -22,8 +22,17 @@ function EditPage({callback, Cpage, pagesCount, totalCount, itemsOnPage}){
   
   const buttons = [];
 
-  if (Cpage <= 3) {
+  if(pagesCount <= 5){
     for (let i = 1; i <= Math.min(pagesCount, 5); i++) {
+      buttons.push(
+        <button key={i} onClick={() => callback(i)} className={i == Cpage ? 'btn-choose-page active' : 'btn-choose-page' }>
+          {i}
+        </button>
+      );
+    }
+  }
+  else if (Cpage <= 3) {
+    for (let i = 1; i <= Math.min(pagesCount, 4); i++) {
       buttons.push(
         <button key={i} onClick={() => callback(i)} className={i == Cpage ? 'btn-choose-page active' : 'btn-choose-page' }>
           {i}
@@ -102,7 +111,7 @@ function EditPage({callback, Cpage, pagesCount, totalCount, itemsOnPage}){
 
 function App() {
 
-  const itemsOnPage = 3;
+  const itemsOnPage = 2;
   const [Gpage, setPage] = useState(1);
   const [htmldata, setHtmlData] = useState();
   const [state, setState] = useState(1);
