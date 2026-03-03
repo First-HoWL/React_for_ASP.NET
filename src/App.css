@@ -37,7 +37,7 @@
   }
 }
 
-table, td, th {
+/* table, td, th {
   border: 1px solid;
   
 }
@@ -94,4 +94,26 @@ div.right-row{
   align-items: center;
   justify-content: center;
   flex-direction: column;
+} */
+
+
+table, td, th {
+  border: 1px solid;
+  
+}
+td{
+  width: 40px;
+  height: 40px;
+  text-align: center;
+}
+table{
+  border-collapse: collapse;
+  margin: 20px 0 0 20px;
+  width: 510px;
+}
+.bomb{
+  background-color: rgb(73, 73, 73);
+}
+.clear{
+  background-color: grey;
 }
