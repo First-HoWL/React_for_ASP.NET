@@ -232,9 +232,17 @@ function GetMap({map}){
     for(let j = 0; j < 10; j++){
       items.push(<td 
         className={
-          map[i][j] == "B" ? "bomb" : 
-          map[i][j] == "O" ? "clear" :
-          "numb"
+          map[i][j] === "B" ? "bomb" : 
+          map[i][j] === "O" ? "clear" :
+          map[i][j] === "1" ? "numb1" :
+          map[i][j] === "2" ? "numb2" :
+          map[i][j] === "3" ? "numb3" :
+          map[i][j] === "4" ? "numb4" :
+          map[i][j] === "5" ? "numb5" :
+          map[i][j] === "6" ? "numb6" :
+          map[i][j] === "7" ? "numb7" :
+          map[i][j] === "8" ? "numb8" :
+          map[i][j] === "F" ? "flag" : "closen"
 
         }
         >{map[i][j]}</td>)

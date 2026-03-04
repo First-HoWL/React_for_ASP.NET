@@ -102,8 +102,9 @@ table, td, th {
   
 }
 td{
-  width: 40px;
-  height: 40px;
+  max-width: 46px;
+  width: 46px;
+  height: 46px;
   text-align: center;
 }
 table{
@@ -112,7 +113,17 @@ table{
   width: 510px;
 }
 .bomb{
-  background-color: rgb(73, 73, 73);
+  /* background-color: rgb(73, 73, 73); */
+  background-image: url("img/bomb.png");
+  background-repeat: no-repeat;
+  background-size: 80%;
+  background-position: center;
+}
+.flag{
+  background-image: url("img/flag.png");
+  background-repeat: no-repeat;
+  background-size: 80%;
+  background-position: center;
 }
 .clear{
   background-color: grey;
