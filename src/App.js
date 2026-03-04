@@ -221,10 +221,14 @@ import './App.css';
 //   );
 // }
 
+document.addEventListener('contextmenu', (event) => {
+    event.preventDefault(); // Запрещает появление браузерной панели
+});
 
 
-function GetMap({map}){
+function GetMap({map, callBackFetch, islose, flagsMap, setFlagsMap}){
   const mapHtml = []
+  //let flagsMap = flagsMaps
 
 
   for(let i = 0; i < 10; i++){
@@ -242,10 +246,29 @@ function GetMap({map}){
           map[i][j] === "6" ? "numb6" :
           map[i][j] === "7" ? "numb7" :
           map[i][j] === "8" ? "numb8" :
-          map[i][j] === "F" ? "flag" : "closen"
+          flagsMap[i][j] === "F" ? "flag" : "closen"
 
         }
-        >{map[i][j]}</td>)
+        onMouseDown={
+          map[i][j] === "" ? (e) => 
+            {
+              //console.log(e.button)
+              if(e.button === 0){
+                if(flagsMap[i][j] !== "F"){
+                  callBackFetch(j, i)
+                  }
+              }
+              else if (e.button === 2){
+                console.log(e.button)
+                //if(flagsMap[i][j] !== "F")
+                  flagsMap[i][j] = "F";
+                // else
+                //   flagsMap[i][j] = "";
+                
+              }
+            }
+           : undefined}
+        >{map[i][j] !== "B" ? map[i][j] !== "O" ? map[i][j] : "" : "" }</td>)
     }
     mapHtml.push(<tr>{items}</tr>)
   }
@@ -254,13 +277,16 @@ function GetMap({map}){
 }
 
 function App() {
-  const [id, setId] = useState(3)
+  const [id, setId] = useState()
   const [map, setMap] = useState()
+  let flagsMap = Array(10).fill(null).map(() => Array(10).fill(""))
+  const [iswin, setIswin] = useState(false)
+  const [islose, setIslose] = useState(false)
   async function func(){
     let a = await fetch(`https://localhost:7198/FieldsControler/fields/${id}`)
     let b = await a.json()
     console.log(b)
-    setMap(JSON.parse(b.fullFieldJson))
+    setMap(JSON.parse(b.userFieldJson))
     
     // if(b !== null && b !== undefined){
     //   //setData(b)
@@ -275,13 +301,43 @@ function App() {
     // }
 
   }
-  useEffect(() => {func()}, []);
+  async function fetchMove(x, y){
+    let a = await fetch(`https://localhost:7198/FieldsControler/move?id=${id}&x=${x}&y=${y}`, {method: "Post"})
+    let b = await a.json()
+    console.log(b)
+    setMap(b.field)
+    setIslose(b.isLose)
+    setIswin(b.isWin)
+
+  }
+
+  async function createNewField(sizeX = 10, sizeY = 10, mines = 10){
+    let a = await fetch(`https://localhost:7198/FieldsControler/CreateField?SizeX=${sizeX}&SizeY=${sizeY}&Mines=${mines}`, {method: "Post"})
+    let b = await a.json()
+    console.log(b)
+    setId(b.id)
+    setMap(JSON.parse(b.userFieldJson))
+    setIslose(false)
+    setIswin(false)
+    flagsMap = Array(10).fill(null).map(() => Array(10).fill(""))
+  }
+
+  useEffect(() => {
+  id !== undefined && func();
+  }, []);
 
   return (<>
+  <button onClick={() => createNewField()}>Create new Field</button>
+  <input name="Id" placeholder='Id' value={id} onChange={(e) => {setId(e.target.value)}}></input>
+  <button onClick={() => func()}>Find</button>
     {map != null && <table>
-      <GetMap map={map}/>
+      <tbody>
+      <GetMap map={map} islose={islose} flagsMap = {flagsMap} setFlagsMap = {(a) => flagsMap = a} callBackFetch={(x, y) => fetchMove(x, y)}/>
+        </tbody>
     </table> }
-
+  {islose && <h1>You Lose!</h1>}
+      
+  {iswin && <h1>You Win!</h1>}
   </>)
 }
 
