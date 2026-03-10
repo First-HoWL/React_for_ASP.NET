@@ -117,9 +117,10 @@ function LoginPage(){
   const navigate = useNavigate()
   useEffect(()=>{
     if (localStorage.getItem("token") != null){
+      
       navigate("/", {replace:true})
     }
-
+    
   })
 
   function login(e){
@@ -156,12 +157,108 @@ function LoginPage(){
     </>
   )
 }
-function IndexPage(){
 
+function RegistrationPage(){
+  const navigate = useNavigate()
+  // useEffect(()=>{
+  //   if (localStorage.getItem("token") != null){
+      
+  //     navigate("/", {replace:true})
+  //   }
+  // })
+
+  function login(){
+
+    let credentials = {
+      "email" : document.getElementById("userEmail").value,
+      "password" : document.getElementById("userPassword").value,
+    }
+    fetch("https://localhost:7198/Users/login", {
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(credentials)
+    }).then(response => response.text())
+    .then(data => {
+      localStorage.setItem("token", data)
+      navigate("/", {replace:true})
+    })
+    .catch(err => {
+      console.log(err)
+    })
+
+  }
+
+
+
+  function registration(e){
+    e.preventDefault()
+
+    let credentials = {
+      "id": 0,
+      "name" : document.getElementById("userName").value,
+      "email" : document.getElementById("userEmail").value,
+      "passwordHash" : document.getElementById("userPassword").value,
+      "birthday" : document.getElementById("userBirthday").value,
+      "gender" : document.getElementById("userGender").value,
+      "passwordSalt" : "t"
+    }
+    fetch("https://localhost:7198/Users/register", {
+      method: "POST",
+      headers:{
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(credentials)
+    }).then(response => {
+      if(response.status === 200){
+        login()
+      }
+    })
+
+  }
+
+
+  return(
+    <>
+    <form onSubmit={(e) => registration(e)}>
+      <input id="userEmail" type='email' placeholder='email'/>
+      <input id="userPassword" type='password' placeholder='password'/>
+      <input id="userName" type='text' placeholder='name'/>
+      <input id="userBirthday" type='date'/>
+      <select id="userGender" >
+        <option>Male</option>
+        <option>Female</option>
+        <option>Croisant</option>
+        <option>None</option>
+      </select>
+      <button type='submit'>Submit</button>
+    </form>
+    </>
+  )
+}
+
+function IndexPage(){
+  const token = localStorage.getItem("token");
   const navigate = useNavigate()
   useEffect(()=>{
-    if (localStorage.getItem("token") === null){
+    if (token === null){
       navigate("/login", {replace:true})
+    }
+    else{
+      fetch("https://localhost:7198/Users/me", {
+      method: "GET",
+      headers:{
+        "Authorization": `Bearer ${token}`
+      }
+    }).then(response => {
+      if(response.status === 401){
+        localStorage.removeItem("token")
+        //console.log(response)
+        navigate("/login", {replace:true})
+      }
+        
+    })
     }
 
   })
@@ -175,17 +272,15 @@ function IndexPage(){
 
 function App() {
 
-  function function1(){
-  fetch("https://localhost:7198/Users").then(data => data.json()).then(text => console.log(text))
-  }
 
   return(
     <>
     <Routes>
       <Route path='/' element={<IndexPage />} />
       <Route path='/login' element={<LoginPage />} />
+      <Route path='/registration' element={<RegistrationPage />} />
+      
     </Routes>
-    <button onClick={() => function1()}>Click me!</button>
     </>
   )
 }

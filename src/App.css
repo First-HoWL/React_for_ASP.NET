@@ -128,3 +128,7 @@ table{
 .clear{
   background-color: grey;
 }
+/* form{
+  display: flex;
+  flex-direction: column;
+} */
