@@ -96,7 +96,7 @@ div.right-row{
   flex-direction: column;
 } */
 
-
+/* 
 table, td, th {
   border: 1px solid;
   
@@ -113,7 +113,6 @@ table{
   width: 510px;
 }
 .bomb{
-  /* background-color: rgb(73, 73, 73); */
   background-image: url("img/bomb.png");
   background-repeat: no-repeat;
   background-size: 80%;
@@ -127,8 +126,39 @@ table{
 }
 .clear{
   background-color: grey;
-}
+} */
+
+
 /* form{
   display: flex;
   flex-direction: column;
 } */
+
+
+table, td, th {
+  border: 1px solid;
+  
+}
+
+td{
+  padding: 10px 20px 10px 20px;
+}
+
+table{
+  border-collapse: collapse;
+  margin: 20px 0 0 20px;
+}
+
+button.remove{
+  background-color: red;
+  border: 0px;
+  padding: 10px;
+  border-radius: 8px;
+}
+button.edit{
+  background-color: rgb(255, 196, 0);
+  border: 0px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-right: 10px;
+}
