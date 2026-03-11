@@ -237,7 +237,8 @@ function Edit(){
     fetch("https://localhost:7198/Users/Edit", {
       method: "PUT",
       headers:{
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify(formData)
     }).then(response => {
