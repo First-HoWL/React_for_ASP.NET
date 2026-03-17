@@ -8,8 +8,7 @@ function LoginPage(){
   
   const navigate = useNavigate()
   useEffect(()=>{
-    if (localStorage.getItem("token") != null){
-      
+    if (localStorage.getItem("AccessToken") != null){
       navigate("/", {replace:true})
     }
     
@@ -28,9 +27,11 @@ function LoginPage(){
         "Content-Type": "application/json"
       },
       body: JSON.stringify(credentials)
-    }).then(response => response.text())
+    }).then(response => response.json())
     .then(data => {
-      localStorage.setItem("token", data)
+      console.log(data)
+      localStorage.setItem("AccessToken", data.accessToken)
+      localStorage.setItem("RefreshToken", data.refreshToken)
       navigate("/", {replace:true})
     })
     .catch(err => {
@@ -42,7 +43,7 @@ function LoginPage(){
   return(
     <>
     <form onSubmit={(e) => login(e)}>
-      <input id="userEmail" type='email' placeholder='email'/>
+      <input id="userEmail"  placeholder='email'/>
       <input id="userPassword" type='password' placeholder='password'/>
       <button type='submit'>Submit</button>
     </form>
@@ -52,12 +53,6 @@ function LoginPage(){
 
 function RegistrationPage(){
   const navigate = useNavigate()
-  // useEffect(()=>{
-  //   if (localStorage.getItem("token") != null){
-      
-  //     navigate("/", {replace:true})
-  //   }
-  // })
 
   function login(){
 
@@ -71,9 +66,11 @@ function RegistrationPage(){
         "Content-Type": "application/json"
       },
       body: JSON.stringify(credentials)
-    }).then(response => response.text())
+    }).then(response => response.json())
     .then(data => {
-      localStorage.setItem("token", data)
+      //console.log(data)
+      localStorage.setItem("AccessToken", data.accessToken)
+      localStorage.setItem("RefreshToken", data.refreshToken)
       navigate("/", {replace:true})
     })
     .catch(err => {
@@ -111,7 +108,7 @@ function RegistrationPage(){
   return(
     <>
     <form onSubmit={(e) => registration(e)}>
-      <input id="userEmail" type='email' placeholder='email'/>
+      <input id="userEmail"  placeholder='email'/>
       <input id="userPassword" type='password' placeholder='password'/>
       <input id="userName" type='text' placeholder='name'/>
       <input id="userBirthday" type='date'/>
@@ -129,7 +126,7 @@ function RegistrationPage(){
 
 function Users(){
   const navigate = useNavigate()
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("AccessToken");
   const [users, setUsers] = useState([]);
 
   useEffect(()=>{
@@ -143,14 +140,44 @@ function Users(){
           "Authorization": `Bearer ${token}`
       }
       }).then(response => {
-        if(response.status === 401 || response.status === 403){
-          // localStorage.removeItem("token")
-          console.log(response)
-          navigate("/", {replace:true})
+        if(response.status === 401){
+        const refreshToken = localStorage.getItem("RefreshToken");
+        if(refreshToken == null){
+            navigate("/login", {replace: true})
         }
-        else {
-          return response.json()
+        else{
+          fetch(`https://localhost:7198/Users/refresh`, {
+          method: "POST",
+          headers:{
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(refreshToken)
+        }).then( data => {
+          if (data.status === 401){
+            localStorage.removeItem("AccessToken")
+            localStorage.removeItem("RefreshToken")
+            navigate("/login", {replace:true})
+          }
+          else{
+          return data.json()
+          }
+        }).then(tokens => {
+          if(tokens === null) return;
+          else{
+            localStorage.setItem("AccessToken", tokens.accessToken)
+            localStorage.setItem("RefreshToken", tokens.refreshToken)
+            // window.location.reload()
+          }
+        })
         }
+      }
+      if(response.status === 403){
+        console.log(response)
+        navigate("/", {replace:true})
+      }
+      else {
+        return response.json()
+      }
         
       })
       .then(data => {
@@ -195,7 +222,19 @@ function Users(){
                 navigate(`/users/edit/${e.target.value}`, {replace:true})}>
                 Edit
               </button>
-              <button className='remove'>
+              <button value={e.id} className='remove'onClick={
+                (e) => 
+                {
+                  fetch(`https://localhost:7198/Users/Delete/${e.target.value}`, {
+                      method: "DELETE",
+                      headers:{
+                        "Authorization": `Bearer ${token}`
+                    }
+                  });
+                  window.location.reload();
+                  
+                }
+                }>
                 Remove
               </button>
               </td>
@@ -209,7 +248,8 @@ function Users(){
 
 function Edit(){
   const navigate = useNavigate()
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("AccessToken");
+  const RefreshToken = localStorage.getItem("RefreshToken");
   const [user, setUser] = useState();
   const { id } = useParams();
 
@@ -252,6 +292,7 @@ function Edit(){
 
   useEffect(()=>{
     if (token === null){
+      
       navigate("/login", {replace:true})
     }
 
@@ -261,8 +302,38 @@ function Edit(){
           "Authorization": `Bearer ${token}`
       }
       }).then(response => {
-        if(response.status === 401 || response.status === 403){
-          // localStorage.removeItem("token")
+        if(response.status === 401){
+        const refreshToken = localStorage.getItem("RefreshToken");
+        if(refreshToken == null){
+            navigate("/login", {replace: true})
+        }
+        else{
+          fetch(`https://localhost:7198/Users/refresh`, {
+          method: "POST",
+          headers:{
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(refreshToken)
+        }).then( data => {
+          if (data.status === 401){
+            localStorage.removeItem("AccessToken")
+            localStorage.removeItem("RefreshToken")
+            navigate("/login", {replace:true})
+          }
+          else{
+          return data.json()
+          }
+        }).then(tokens => {
+          if(tokens === null) return;
+          else{
+            localStorage.setItem("AccessToken", tokens.accessToken)
+            localStorage.setItem("RefreshToken", tokens.refreshToken)
+            //window.location.reload()
+          }
+        })
+        }
+      }
+        if( response.status === 403){
           console.log(response)
           navigate("/", {replace:true})
         }
@@ -294,7 +365,7 @@ function Edit(){
   return(
     <>
     <form onSubmit={(e) => Update(e)}>
-      <input  type='email' name="email" value={formData.email} placeholder='email' onChange={(e) => handleChange(e)}/>
+      <input   name="email" value={formData.email} placeholder='email' onChange={(e) => handleChange(e)}/>
       <input type='text' name="passwordHash" value={formData.passwordHash} placeholder='password' onChange={(e) => handleChange(e)}/>
       <input type='text' name="name" value={formData.name}placeholder='name' onChange={(e) => handleChange(e)}/>
       <input type='date' name="birthday"  value={formData.birthday}onChange={(e) => handleChange(e)}/>
@@ -314,7 +385,7 @@ function Edit(){
 }
 
 function IndexPage(){
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("AccessToken");
   const navigate = useNavigate()
   useEffect(()=>{
     if (token === null){
@@ -328,11 +399,34 @@ function IndexPage(){
       }
     }).then(response => {
       if(response.status === 401){
-        localStorage.removeItem("token")
-        //console.log(response)
-        navigate("/login", {replace:true})
+        const refreshToken = localStorage.getItem("RefreshToken");
+        if(refreshToken == null || refreshToken === undefined){
+            navigate("/login", {replace: true})
+        }
+        else{
+          fetch(`https://localhost:7198/Users/refresh`, {
+            method: "POST",
+            headers:{
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(refreshToken)
+          }).then( data => {
+            if (data.status === 401){
+              localStorage.removeItem("AccessToken")
+              localStorage.removeItem("RefreshToken")
+              navigate("/login", {replace:true})
+              return null;
+            }
+            else{
+              return data.json()
+            }
+          }).then(tokens => {
+            if(tokens === null) return;
+            localStorage.setItem("AccessToken", tokens.accessToken)
+            localStorage.setItem("RefreshToken", tokens.refreshToken)
+          })
+        }
       }
-        
     })
     }
 
