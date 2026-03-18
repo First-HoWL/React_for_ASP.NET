@@ -142,38 +142,38 @@ function Users(){
       }).then(response => {
         if(response.status === 401){
         const refreshToken = localStorage.getItem("RefreshToken");
-        if(refreshToken == null){
+        if(refreshToken == null || refreshToken === undefined){
             navigate("/login", {replace: true})
         }
         else{
           fetch(`https://localhost:7198/Users/refresh`, {
-          method: "POST",
-          headers:{
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(refreshToken)
-        }).then( data => {
-          if (data.status === 401){
-            localStorage.removeItem("AccessToken")
-            localStorage.removeItem("RefreshToken")
-            navigate("/login", {replace:true})
-          }
-          else{
-          return data.json()
-          }
-        }).then(tokens => {
-          if(tokens === null) return;
-          else{
+            method: "POST",
+            headers:{
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(refreshToken)
+          }).then( data => {
+            if (data.status === 401){
+              localStorage.removeItem("AccessToken")
+              localStorage.removeItem("RefreshToken")
+              navigate("/login", {replace:true})
+              return null;
+            }
+            else{
+              return data.json()
+            }
+          }).then(tokens => {
+            if(tokens === null) return;
             localStorage.setItem("AccessToken", tokens.accessToken)
             localStorage.setItem("RefreshToken", tokens.refreshToken)
-            // window.location.reload()
-          }
-        })
+            window.location.reload()
+          })
         }
       }
-      if(response.status === 403){
+      else if(response.status === 403){
         console.log(response)
         navigate("/", {replace:true})
+        return null;
       }
       else {
         return response.json()
@@ -304,38 +304,40 @@ function Edit(){
       }).then(response => {
         if(response.status === 401){
         const refreshToken = localStorage.getItem("RefreshToken");
-        if(refreshToken == null){
+        if(refreshToken == null || refreshToken === undefined){
             navigate("/login", {replace: true})
         }
         else{
+        const refreshToken = localStorage.getItem("RefreshToken");
           fetch(`https://localhost:7198/Users/refresh`, {
-          method: "POST",
-          headers:{
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(refreshToken)
-        }).then( data => {
-          if (data.status === 401){
-            localStorage.removeItem("AccessToken")
-            localStorage.removeItem("RefreshToken")
-            navigate("/login", {replace:true})
-          }
-          else{
-          return data.json()
-          }
-        }).then(tokens => {
-          if(tokens === null) return;
-          else{
+            method: "POST",
+            headers:{
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(refreshToken)
+          }).then( data => {
+            if (data.status === 401){
+              localStorage.removeItem("AccessToken")
+              localStorage.removeItem("RefreshToken")
+              navigate("/login", {replace:true})
+              return null;
+            }
+            else{
+              return data.json()
+            }
+          }).then(tokens => {
+            if(tokens === null) return;
             localStorage.setItem("AccessToken", tokens.accessToken)
             localStorage.setItem("RefreshToken", tokens.refreshToken)
-            //window.location.reload()
-          }
-        })
+            window.location.reload()
+            return null;
+          })
         }
       }
-        if( response.status === 403){
+        else if( response.status === 403){
           console.log(response)
           navigate("/", {replace:true})
+          return null;
         }
         else {
           return response.json()
